@@ -63,4 +63,13 @@ tasks.withType(KotlinCompile) {
 tasks.named('test') {
 	useJUnitPlatform()
 }
-
+sourceSets {
+	test {
+		java {
+			srcDirs 'src/test/kotlin', 'src/test/java'
+		}
+		resources {
+			srcDirs 'src/test/resources'
+		}
+	}
+}

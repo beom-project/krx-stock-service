@@ -1,6 +1,6 @@
 package com.bs.krxstockservice.repository
 
-import com.bs.krxstockservice.config.H2CustomAlias
+
 import com.bs.krxstockservice.domain.QStock
 import com.bs.krxstockservice.domain.Stock
 import com.bs.krxstockservice.domain.StockId
@@ -76,7 +76,7 @@ internal class StockQueryRepositoryTest(
     fun setUp() {
         queryFactory = JPAQueryFactory(entityManager)
         entityManager!!
-            .createNativeQuery("CREATE ALIAS IF NOT EXISTS YEARWEEK FOR \"com.bs.krxstockservice.config.H2CustomAlias.YEARWEEK\"")
+            .createNativeQuery("CREATE ALIAS IF NOT EXISTS YEARWEEK FOR \"com.bs.krxstockservice.repository.H2CustomAlias.YEARWEEK\"")
             .executeUpdate()
     }
 
