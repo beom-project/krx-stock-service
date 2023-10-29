@@ -17,7 +17,6 @@ import com.querydsl.core.types.dsl.StringExpression
 class StockQueryRepository(
     private val queryFactory: JPAQueryFactory,
 ) {
-
     /**
      * 일별 OHLCV
      */
@@ -41,64 +40,30 @@ class StockQueryRepository(
     /**
      * 주별 OHLCV
      */
-    fun findWeeklyStockByTicker(ticker:String, type: String?="week"): List<StockOHLCV>{
-        //get HLV week
-        val stockHLVOfWeeks = getStockHLV(ticker, type!!)
-        //get StockOC
-        val stockOCWeekMap = convertStockOCToMap(getStockOCs(ticker, getFirstDays(stockHLVOfWeeks)))
-        //합치기
-        return stockHLVOfWeeks
-            .stream()
-            .filter{stockOCWeekMap.containsKey(it.firstDayOfWeek)}
-            .map {
-                val stockOC = stockOCWeekMap[it.firstDayOfWeek]
-                StockOHLCV(
-                    ticker = it.ticker,
-                    name = stockOC!!.name,
-                    day = it.firstDayOfWeek,
-                    openPrice = stockOC.open,
-                    highPrice = it.maxHighOfWeek,
-                    lowPrice = it.minLowOfWeek,
-                    closePrice = stockOC.close,
-                    volume = it.volume,
-                )
-            }.toList()
+    fun findWeeklyStockByTicker(ticker:String, period: String?="week"): List<StockOHLCV>{
+        return findStockByTickerAndPeriod(ticker,period!!)
     }
     /**
      *  월별 OHLCV
      */
-    fun findMonthlyStockByTicker(ticker:String, type: String?="month"):List<StockOHLCV>{
-        val stockHLVOfMonth = getStockHLV(ticker, type!!)
-        //get StockOC
-        val stockOCMap = convertStockOCToMap(getStockOCs(ticker, getFirstDays(stockHLVOfMonth)))
-        //합치기
-        return stockHLVOfMonth
-            .stream()
-            .filter{stockOCMap.containsKey(it.firstDayOfWeek)}
-            .map {
-                val stockOC = stockOCMap[it.firstDayOfWeek]
-                StockOHLCV(
-                    ticker = it.ticker,
-                    name = stockOC!!.name,
-                    day = it.firstDayOfWeek,
-                    openPrice = stockOC.open,
-                    highPrice = it.maxHighOfWeek,
-                    lowPrice = it.minLowOfWeek,
-                    closePrice = stockOC.close,
-                    volume = it.volume,
-                )
-            }.toList()
+    fun findMonthlyStockByTicker(ticker:String, period: String?="month"):List<StockOHLCV>{
+        return findStockByTickerAndPeriod(ticker,period!!)
     }
 
     /**
      * 연도별 OHLCV
      */
-    fun findYearlyStockByTicker(ticker:String, type: String?="year"):List<StockOHLCV>{
-        val stockHLVOfYear = getStockHLV(ticker, type!!)
+    fun findYearlyStockByTicker(ticker:String, period: String?="year"):List<StockOHLCV>{
+        return findStockByTickerAndPeriod(ticker,period!!)
+    }
+
+    //-------------------------------------------------------
+    fun findStockByTickerAndPeriod(ticker:String, period: String):List<StockOHLCV>{
+        val stockHLVC = getStockHLV(ticker, period)
         //get StockOC
-        val stockOCMap = convertStockOCToMap(getStockOCs(ticker, getFirstDays(stockHLVOfYear)))
+        val stockOCMap = convertStockOCToMap(getStockOCs(ticker, getFirstDays(stockHLVC)))
         //합치기
-        return stockHLVOfYear
+        return stockHLVC
             .stream()
             .filter{stockOCMap.containsKey(it.firstDayOfWeek)}
             .map {
@@ -116,13 +81,16 @@ class StockQueryRepository(
             }.toList()
     }
 
-
-
-    //-------------------------------------------------------
-    private fun getStockHLV(ticker: String, type: String):List<StockHLV>{
+    private fun getStockHLV(ticker: String, period: String):List<StockHLV>{
         return queryFactory
             .select(
-                stockHLVColumnExpression()
+                QStockHLV(
+                    stock.stockId.ticker,
+                    stock.stockId.date.min(),
+                    stock.highPrice.max(),
+                    stock.lowPrice.min(),
+                    stock.volume.castToNum(Long::class.java).sum().stringValue().`as`("volume"),
+                )
             )
             .from(stock)
             .where(
@@ -130,20 +98,10 @@ class StockQueryRepository(
             )
             .groupBy(
                 stock.stockId.ticker,
-                groupByDateType(type)
+                groupByDateType(period)
             )
             .orderBy(OrderSpecifier(Order.DESC, stock.stockId.date.min()))
             .fetch()
-    }
-
-    private fun stockHLVColumnExpression():QStockHLV{
-        return QStockHLV(
-            stock.stockId.ticker,
-            stock.stockId.date.min(),
-            stock.highPrice.max(),
-            stock.lowPrice.min(),
-            stock.volume.castToNum(Long::class.java).sum().stringValue().`as`("volume"),
-        )
     }
 
     private fun eqTicker(ticker: String):BooleanExpression{
