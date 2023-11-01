@@ -58,7 +58,7 @@ class StockQueryRepository(
     }
 
     //-------------------------------------------------------
-    fun findStockByTickerAndPeriod(ticker:String, period: String):List<StockOHLCV>{
+    private fun findStockByTickerAndPeriod(ticker:String, period: String):List<StockOHLCV>{
         val stockHLVC = getStockHLV(ticker, period)
         //get StockOC
         val stockOCMap = convertStockOCToMap(getStockOCs(ticker, getFirstDays(stockHLVC)))
