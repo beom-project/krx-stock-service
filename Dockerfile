@@ -6,4 +6,4 @@ COPY build/libs/*.jar /app/application.jar
 
 EXPOSE 8080
 # 운영 환경에서는 'prod' 프로파일을 사용
-CMD ["java", "-가jar", "-Dspring.profiles.active=dev", "/app/application.jar"]
+CMD ["java", "-jar", "-Dspring.profiles.active=prod", "/app/application.jar"]
