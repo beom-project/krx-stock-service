@@ -4,8 +4,8 @@ import com.querydsl.core.annotations.QueryProjection
 
 data class StockHLV @QueryProjection constructor(
     var ticker:String,
-    var firstDayOfWeek:String,
-    var maxHighOfWeek:String,
-    var minLowOfWeek:String,
+    var firstDay:String,
+    var maxHighPrice:String,
+    var minLowPrice:String,
     var volume:String,
 )

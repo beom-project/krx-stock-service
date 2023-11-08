@@ -247,7 +247,7 @@ internal class StockQueryRepositoryTest(
             .orderBy(OrderSpecifier(Order.DESC,QStock.stock.stockId.date.min()))
             .fetch()
 
-        val firstDays = stockHLVOfWeeks.parallelStream().map { it.firstDayOfWeek }.toList()
+        val firstDays = stockHLVOfWeeks.parallelStream().map { it.firstDay }.toList()
 
         val stockOC = queryFactory
             .select(
@@ -268,16 +268,16 @@ internal class StockQueryRepositoryTest(
         //when
         val stockOHLCVOfWeeks = stockHLVOfWeeks
             .stream()
-            .filter { stockOCMap.containsKey(it.firstDayOfWeek) }
+            .filter { stockOCMap.containsKey(it.firstDay) }
             .map {
-                val stockOC = stockOCMap[it.firstDayOfWeek]
+                val stockOC = stockOCMap[it.firstDay]
                 StockOHLCV(
                     ticker = it.ticker,
                     name = stockOC!!.name,
-                    day = it.firstDayOfWeek,
+                    day = it.firstDay,
                     openPrice = stockOC.open,
-                    highPrice = it.maxHighOfWeek,
-                    lowPrice = it.minLowOfWeek,
+                    highPrice = it.maxHighPrice,
+                    lowPrice = it.minLowPrice,
                     closePrice = stockOC.close,
                     volume = it.volume,
                 )
@@ -317,7 +317,7 @@ internal class StockQueryRepositoryTest(
             .orderBy(OrderSpecifier(Order.DESC,QStock.stock.stockId.date.min()))
             .fetch()
 
-        val firstDays= stockHLVOfMonth.parallelStream().map { it.firstDayOfWeek }.toList()
+        val firstDays= stockHLVOfMonth.parallelStream().map { it.firstDay }.toList()
 
         val stockOC = queryFactory
             .select(
@@ -338,16 +338,16 @@ internal class StockQueryRepositoryTest(
         //when
         val stockOHLCVOfMonth = stockHLVOfMonth
             .stream()
-            .filter { stockOCMap.containsKey(it.firstDayOfWeek) }
+            .filter { stockOCMap.containsKey(it.firstDay) }
             .map {
-                val stockOC = stockOCMap[it.firstDayOfWeek]
+                val stockOC = stockOCMap[it.firstDay]
                 StockOHLCV(
                     ticker = it.ticker,
                     name = stockOC!!.name,
-                    day = it.firstDayOfWeek,
+                    day = it.firstDay,
                     openPrice = stockOC.open,
-                    highPrice = it.maxHighOfWeek,
-                    lowPrice = it.minLowOfWeek,
+                    highPrice = it.maxHighPrice,
+                    lowPrice = it.minLowPrice,
                     closePrice = stockOC.close,
                     volume = it.volume,
                 )
@@ -385,7 +385,7 @@ internal class StockQueryRepositoryTest(
             .orderBy(OrderSpecifier(Order.DESC,QStock.stock.stockId.date.min()))
             .fetch()
 
-        val firstDays= stockHLVOfYear.parallelStream().map { it.firstDayOfWeek }.toList()
+        val firstDays= stockHLVOfYear.parallelStream().map { it.firstDay }.toList()
 
         val stockOC = queryFactory
             .select(
@@ -406,16 +406,16 @@ internal class StockQueryRepositoryTest(
         //when
         val stockOHLCVOfMonth = stockHLVOfYear
             .stream()
-            .filter { stockOCMap.containsKey(it.firstDayOfWeek) }
+            .filter { stockOCMap.containsKey(it.firstDay) }
             .map {
-                val stockOC = stockOCMap[it.firstDayOfWeek]
+                val stockOC = stockOCMap[it.firstDay]
                 StockOHLCV(
                     ticker = it.ticker,
                     name = stockOC!!.name,
-                    day = it.firstDayOfWeek,
+                    day = it.firstDay,
                     openPrice = stockOC.open,
-                    highPrice = it.maxHighOfWeek,
-                    lowPrice = it.minLowOfWeek,
+                    highPrice = it.maxHighPrice,
+                    lowPrice = it.minLowPrice,
                     closePrice = stockOC.close,
                     volume = it.volume,
                 )

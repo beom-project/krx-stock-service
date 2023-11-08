@@ -65,16 +65,16 @@ class StockQueryRepository(
         //합치기
         return stockHLVC
             .stream()
-            .filter{stockOCMap.containsKey(it.firstDayOfWeek)}
+            .filter{stockOCMap.containsKey(it.firstDay)}
             .map {
-                val stockOC = stockOCMap[it.firstDayOfWeek]
+                val stockOC = stockOCMap[it.firstDay]
                 StockOHLCV(
                     ticker = it.ticker,
                     name = stockOC!!.name,
-                    day = it.firstDayOfWeek,
+                    day = it.firstDay,
                     openPrice = stockOC.open,
-                    highPrice = it.maxHighOfWeek,
-                    lowPrice = it.minLowOfWeek,
+                    highPrice = it.maxHighPrice,
+                    lowPrice = it.minLowPrice,
                     closePrice = stockOC.close,
                     volume = it.volume,
                 )
@@ -117,7 +117,7 @@ class StockQueryRepository(
     }
 
     private fun getFirstDays(stockHLVS:List<StockHLV>): List<String>{
-        return stockHLVS.parallelStream().map { it.firstDayOfWeek }.toList()
+        return stockHLVS.parallelStream().map { it.firstDay }.toList()
     }
 
     private fun getStockOCs(ticker: String,days:List<String>): List<StockOC>{
